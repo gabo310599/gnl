@@ -10,4 +10,90 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "get_next_line.h"
 
+size_t	ft_strlen(const char *str)
+{
+	size_t	len;
+
+	len = 0;
+	while (*str)
+	{
+		len++;
+		str++;
+	}
+	return (len);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char		*cpy;
+	size_t		i;
+
+	cpy = (char *) malloc((ft_strlen(s) + 1) * sizeof(char));
+	if (!cpy)
+		return (NULL);
+	i = 0;
+	while (s[i])
+	{
+		cpy[i] = s[i];
+		i++;
+	}
+	cpy[i] = '\0';
+	return (cpy);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	while (*s)
+	{
+		if (*s == (unsigned char) c)
+			return ((char *) s);
+		s++;
+	}
+	if ((unsigned char) c == '\0')
+		return ((char *) s);
+	return (NULL);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*s3;
+	char	*tmp;
+	size_t	s1_len;
+	size_t	s2_len;
+
+	if (!s1 || !s2)
+		return (NULL);
+	s1_len = ft_strlen(s1);
+	s2_len = ft_strlen(s2);
+	s3 = (char *) malloc((s1_len + s2_len + 1) * sizeof(char));
+	if (!s3)
+		return (NULL);
+	tmp = s3;
+	while (*s1)
+		*tmp++ = *s1++;
+	while (*s2)
+		*tmp++ = *s2++;
+	*tmp = '\0';
+	return (s3);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*ptr;
+	size_t	s_len;
+
+	if (!s)
+		return (NULL);
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+		return (ft_strdup(""));
+	if (len > s_len - start)
+		len = s_len - start;
+	ptr = malloc (len + 1);
+	if (!ptr)
+		return (NULL);
+	ft_strlcpy(ptr, &s[start], len + 1);
+	return (ptr);
+}
