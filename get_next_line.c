@@ -12,14 +12,14 @@
 
 #include "get_next_line.h"
 
-char	*get_line(char **storage)
+char	*get_new_line(char **storage)
 {
 	char	*line;
 	char	*temp;
 	int		i;
 
 	i = 0;
-	while ((*storage)[i] && (*storage)[i] != "\n")
+	while ((*storage)[i] && (*storage)[i] != '\n')
 		i++;
 	if ((*storage)[i] == '\n')
 		line = ft_substr(*storage, 0, i + 1);
@@ -28,7 +28,7 @@ char	*get_line(char **storage)
 	if ((*storage)[i])
 		temp = ft_strdup(*storage + i + 1);
 	else
-		temp = ft_strdup("");
+		temp = NULL;
 	free(*storage);
 	*storage = temp;
 	return (line);
@@ -41,10 +41,9 @@ char	*get_next_line(int fd)
 	ssize_t		bytes_read;
 	char		*temp;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || !(buffer = malloc(BUFFER_SIZE + 1)))
 		return (NULL);
-	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	while (!ft_strchr(storage, "\n"))
+	while (!ft_strchr(storage, '\n'))
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read <= 0)
@@ -54,7 +53,12 @@ char	*get_next_line(int fd)
 		free(storage);
 		storage = temp;
 	}
+	free(buffer);
 	if (!storage || !*storage)
+	{
+		free(storage);
+		storage = NULL;
 		return (NULL);
-	return (get_line(&storage));
+	}
+	return (get_new_line(&storage));
 }
