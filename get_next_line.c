@@ -12,7 +12,27 @@
 
 #include "get_next_line.h"
 
-char	*get_new_line(char **storage)
+static void	*free_error(char **storage, char **buffer)
+{
+	free(*buffer);
+	free(*storage);
+	*storage = NULL;
+	return (NULL);
+}
+
+static int	free_gnl_content(char **storage, char **buffer)
+{
+	free(*buffer);
+	if (!*storage || !**storage)
+	{
+		free(*storage);
+		*storage = NULL;
+		return (0);
+	}
+	return (1);
+}
+
+static char	*get_new_line(char **storage)
 {
 	char	*line;
 	char	*temp;
@@ -41,24 +61,24 @@ char	*get_next_line(int fd)
 	ssize_t		bytes_read;
 	char		*temp;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || !(buffer = malloc(BUFFER_SIZE + 1)))
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
 		return (NULL);
 	while (!ft_strchr(storage, '\n'))
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read <= 0)
+		if (bytes_read == -1)
+			return (free_error(&storage, &buffer));
+		if (bytes_read == 0)
 			break ;
 		buffer[bytes_read] = '\0';
 		temp = ft_strjoin(storage, buffer);
 		free(storage);
 		storage = temp;
 	}
-	free(buffer);
-	if (!storage || !*storage)
-	{
-		free(storage);
-		storage = NULL;
+	if (!free_gnl_content(&storage, &buffer))
 		return (NULL);
-	}
 	return (get_new_line(&storage));
 }
